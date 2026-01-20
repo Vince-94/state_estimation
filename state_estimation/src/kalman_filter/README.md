@@ -39,8 +39,16 @@ ros2 launch kalman_filter kalman_filter.launch.py
 ```
 
 
-
-
+## Roadmap
+- ROS2 integration
+  - [x] LKF ROS2 node
+  - [ ] EKF ROS2 node
+  - [ ] UKF ROS2 node
+- Testing
+  - [ ] LKF unit tests
+  - [ ] EKF unit tests
+  - [ ] UKF unit tests
 
 
 ## Reference
+
