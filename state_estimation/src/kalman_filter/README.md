@@ -30,7 +30,7 @@ Kalman filter (KF) estimator library, with the following implementations:
 ## Execution
 
 - `source install/local_setup.bash`
-- Kalman filter: `ros2 run kalman_filter kalman_filter_node`
+- Kalman filter: `ros2 run kalman_filter linear_kalman_filter_node`
 
 ### Launch
 

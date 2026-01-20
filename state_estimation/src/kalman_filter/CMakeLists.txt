@@ -109,14 +109,14 @@ if(DEFINED ENV{ROS_VERSION})
   # C++ NODES #
   #############
 
-  # kalman_filter_node
-  add_executable(kalman_filter_node src/kalman_filter_node.cpp)
-  target_include_directories(kalman_filter_node PUBLIC
+  # linear_kalman_filter_node
+  add_executable(linear_kalman_filter_node src/linear_kalman_filter_node.cpp)
+  target_include_directories(linear_kalman_filter_node PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
   )
-  target_link_libraries(kalman_filter_node linear_kalman_filter)
-  ament_target_dependencies(kalman_filter_node
+  target_link_libraries(linear_kalman_filter_node linear_kalman_filter)
+  ament_target_dependencies(linear_kalman_filter_node
     rclcpp
     tf2
     tf2_ros
@@ -124,8 +124,7 @@ if(DEFINED ENV{ROS_VERSION})
     visualization_msgs
     tf2_geometry_msgs
   )
-  # ament_target_dependencies(kalman_filter_node rclcpp std_msgs geometry_msgs)
-  target_compile_features(kalman_filter_node PUBLIC c_std_11 cxx_std_23)
+  target_compile_features(linear_kalman_filter_node PUBLIC c_std_11 cxx_std_23)
 
 
   ##############
@@ -135,7 +134,7 @@ if(DEFINED ENV{ROS_VERSION})
   # installing executables
   install(
     TARGETS
-      kalman_filter_node
+      linear_kalman_filter_node
     DESTINATION
     lib/${PROJECT_NAME}
 	)

@@ -34,11 +34,11 @@ def generate_launch_description():
 
     #! nodes
 
-    # kalman_filter_node
+    # linear_kalman_filter_node
     kalman_pkg = "kalman_filter"
-    kalman_filter_node = Node(
+    linear_kalman_filter_node = Node(
         package = kalman_pkg,
-        executable = "kalman_filter_node",
+        executable = "linear_kalman_filter_node",
         # name = "kalman_filter",
         parameters=[params_file],
         output={
@@ -73,7 +73,7 @@ def generate_launch_description():
     ld.add_action(colorful_logs)
 
     # nodes
-    ld.add_action(kalman_filter_node)
+    ld.add_action(linear_kalman_filter_node)
 
     # debug
     ld.add_action(rviz_node)

@@ -14,8 +14,8 @@
     - x0                        [array(double)]
     - u0                        [array(double)]
     - P0                        [array(double)]
-    - Q_                         [array(double)]
-    - R_                         [array(double)]
+    - Q                         [array(double)]
+    - R                         [array(double)]
 */
 #include "kalman_filter/linear_kalman_filter.hpp"
 
@@ -352,7 +352,7 @@ class ControllerNode : public rclcpp::Node {
 
 
 int main(int argc, char** argv) {
-    std::string node_name = "kalman_filter_node";
+    std::string node_name = "linear_kalman_filter_node";
 
     rclcpp::init(argc, argv);
 
