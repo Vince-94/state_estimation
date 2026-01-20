@@ -311,11 +311,11 @@ class ControllerNode : public rclcpp::Node {
 
 
   private:
-    int pub_freq_ = 10;
-    double Ts_ = 0.1;
-
     std::shared_ptr<LinearKalmanFilter> lkf{};
     ConstVel1dModel const_vel_1d_sys{};
+
+    int pub_freq_ = 10;
+    double Ts_ = 0.1;
 
     Eigen::VectorXd x;
     Eigen::MatrixXd P;
