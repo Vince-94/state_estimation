@@ -25,12 +25,15 @@ Kalman filter (KF) estimator library, with the following implementations:
 
 - Standard: `./build.bash`
 - ROS2: `colcon build`
+- Source workspace: `source install/local_setup.bash`
 
 
 ## Execution
 
-- `source install/local_setup.bash`
-- Kalman filter: `ros2 run kalman_filter linear_kalman_filter_node`
+- Linear Kalman Filter
+  ```sh
+  ros2 run kalman_filter linear_kalman_filter_node
+  ```
 
 ### Launch
 
