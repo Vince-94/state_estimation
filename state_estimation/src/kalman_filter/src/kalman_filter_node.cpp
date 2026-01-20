@@ -14,8 +14,8 @@
     - x0                        [array(double)]
     - u0                        [array(double)]
     - P0                        [array(double)]
-    - Q                         [array(double)]
-    - R                         [array(double)]
+    - Q_                         [array(double)]
+    - R_                         [array(double)]
 */
 #include "kalman_filter/linear_kalman_filter.hpp"
 
@@ -55,14 +55,14 @@ struct ConstVel1dModel {
 
     explicit ConstVel1dModel(double dt_) : dt(dt_) {}
 
-    Eigen::VectorXd updateState(Eigen::VectorXd x0, Eigen::VectorXd u) {
+    Eigen::VectorXd updateState(Eigen::VectorXd x0, Eigen::VectorXd u_) {
         // position += velocity * dt;
-        auto pos = x0(0) + x0(1) * dt + u(0) * dt * dt;
+        auto pos = x0(0) + x0(1) * dt + u_(0) * dt * dt;
         auto vel = x0(1);
-        Eigen::VectorXd x{
+        Eigen::VectorXd x_{
             {pos, vel}
         };
-        return x;
+        return x_;
     }
 };
 
@@ -77,30 +77,30 @@ class ControllerNode : public rclcpp::Node {
         // ───────────────────────────────────────────────
         // pub_freq
         declare_parameter<int>("pub_freq", pub_freq_);
-        pub_freq_param = get_parameter("pub_freq");
-        int pub_freq_val = static_cast<int>(pub_freq_param.as_int());
+        pub_freq_param_ = get_parameter("pub_freq");
+        int pub_freq_val = static_cast<int>(pub_freq_param_.as_int());
 
         // Ts
         declare_parameter<double>("Ts");
-        Ts_param = get_parameter("Ts");
-        Ts_ = Ts_param.as_double();
+        Ts_param_ = get_parameter("Ts");
+        Ts_ = Ts_param_.as_double();
 
         // x0
         declare_parameter<std::vector<double>>("x0");
-        x0_param = get_parameter("x0");
-        std::vector<double> x0_val = x0_param.as_double_array();
+        x0_param_ = get_parameter("x0");
+        std::vector<double> x0_val = x0_param_.as_double_array();
         Eigen::VectorXd x0 = Eigen::Map<Eigen::VectorXd>(x0_val.data(), static_cast<Eigen::Index>(x0_val.size()));
 
         // u0
         declare_parameter<std::vector<double>>("u0");
-        u0_param = get_parameter("u0");
-        std::vector<double> u0_val = u0_param.as_double_array();
+        u0_param_ = get_parameter("u0");
+        std::vector<double> u0_val = u0_param_.as_double_array();
         Eigen::VectorXd u0 = Eigen::Map<Eigen::VectorXd>(u0_val.data(), static_cast<Eigen::Index>(u0_val.size()));
 
         // P0
         declare_parameter<std::vector<double>>("P0");
-        P0_param = get_parameter("P0");
-        std::vector<double> P0_val = P0_param.as_double_array();
+        P0_param_ = get_parameter("P0");
+        std::vector<double> P0_val = P0_param_.as_double_array();
         if (static_cast<int>(P0_val.size()) != x0.size()) {
             throw std::invalid_argument(
                 "P0 dimensions are not consistent: " + std::to_string(P0_val.size()) + " != " + std::to_string(x0.size())
@@ -109,57 +109,57 @@ class ControllerNode : public rclcpp::Node {
         Eigen::MatrixXd P0 = Eigen::MatrixXd::Zero(P0_val.size(), P0_val.size());
         P0.diagonal() = Eigen::VectorXd::Map(P0_val.data(), P0_val.size());
 
-        // Q
-        declare_parameter<std::vector<double>>("Q");
-        Q_param = get_parameter("Q");
-        std::vector<double> Q_val = Q_param.as_double_array();
+        // Q_
+        declare_parameter<std::vector<double>>("Q_");
+        Q_param_ = get_parameter("Q_");
+        std::vector<double> Q_val = Q_param_.as_double_array();
         if (static_cast<int>(Q_val.size()) != x0.size()) {
             throw std::invalid_argument(
-                "Q dimensions are not consistent: " + std::to_string(Q_val.size()) + " != " + std::to_string(x0.size())
+                "Q_ dimensions are not consistent: " + std::to_string(Q_val.size()) + " != " + std::to_string(x0.size())
             );
         }
-        Q = Eigen::MatrixXd::Zero(Q_val.size(), Q_val.size());
-        Q.diagonal() = Eigen::VectorXd::Map(Q_val.data(), Q_val.size());
+        Q_ = Eigen::MatrixXd::Zero(Q_val.size(), Q_val.size());
+        Q_.diagonal() = Eigen::VectorXd::Map(Q_val.data(), Q_val.size());
 
-        // R
-        declare_parameter<std::vector<double>>("R");
-        R_param = get_parameter("R");
-        std::vector<double> R_val = R_param.as_double_array();
+        // R_
+        declare_parameter<std::vector<double>>("R_");
+        R_param_ = get_parameter("R_");
+        std::vector<double> R_val = R_param_.as_double_array();
         if (static_cast<int>(R_val.size()) != u0.size()) {
             throw std::invalid_argument(
-                "Q dimensions are not consistent: " + std::to_string(R_val.size()) + " != " + std::to_string(u0.size())
+                "Q_ dimensions are not consistent: " + std::to_string(R_val.size()) + " != " + std::to_string(u0.size())
             );
         }
-        R = Eigen::MatrixXd::Zero(R_val.size(), R_val.size());
-        R.diagonal() = Eigen::VectorXd::Map(R_val.data(), R_val.size());
+        R_ = Eigen::MatrixXd::Zero(R_val.size(), R_val.size());
+        R_.diagonal() = Eigen::VectorXd::Map(R_val.data(), R_val.size());
 
 
         RCLCPP_INFO(get_logger(), "Parameters:");
-        RCLCPP_INFO(get_logger(), "* %s = %s Hz", pub_freq_param.get_name().c_str(), pub_freq_param.value_to_string().c_str());
-        RCLCPP_INFO(get_logger(), "* %s = %s s", Ts_param.get_name().c_str(), Ts_param.value_to_string().c_str());
-        RCLCPP_INFO(get_logger(), "* %s = %s", x0_param.get_name().c_str(), x0_param.value_to_string().c_str());
-        RCLCPP_INFO(get_logger(), "* %s = %s", u0_param.get_name().c_str(), u0_param.value_to_string().c_str());
-        RCLCPP_INFO(get_logger(), "* %s = %s", P0_param.get_name().c_str(), P0_param.value_to_string().c_str());
-        RCLCPP_INFO(get_logger(), "* %s = %s", Q_param.get_name().c_str(), Q_param.value_to_string().c_str());
-        RCLCPP_INFO(get_logger(), "* %s = %s", R_param.get_name().c_str(), R_param.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s Hz", pub_freq_param_.get_name().c_str(), pub_freq_param_.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s s", Ts_param_.get_name().c_str(), Ts_param_.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s", x0_param_.get_name().c_str(), x0_param_.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s", u0_param_.get_name().c_str(), u0_param_.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s", P0_param_.get_name().c_str(), P0_param_.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s", Q_param_.get_name().c_str(), Q_param_.value_to_string().c_str());
+        RCLCPP_INFO(get_logger(), "* %s = %s", R_param_.get_name().c_str(), R_param_.value_to_string().c_str());
 
 
         // ───────────────────────────────────────────────
         // Kalman Filter
         // ───────────────────────────────────────────────
         // 1. Create system model
-        const_vel_1d_sys = ConstVel1dModel(Ts_);
-        StateSpace sys_model(const_vel_1d_sys.A, const_vel_1d_sys.B, const_vel_1d_sys.C);
+        system_model_ = ConstVel1dModel(Ts_);
+        StateSpace sys_model(system_model_.A, system_model_.B, system_model_.C);
 
         // 2. Create filter
-        lkf = std::make_shared<LinearKalmanFilter>(std::move(sys_model));
+        lkf_ = std::make_shared<LinearKalmanFilter>(std::move(sys_model));
 
         // 3. Initialize
-        x = x0;
-        u = u0;
-        P = P0;
+        x_ = x0;
+        u_ = u0;
+        P_ = P0;
 
-        lkf->initialize(x, P);
+        lkf_->initialize(x_, P_);
 
         // ───────────────────────────────────────────────
         // ROS2 interface
@@ -181,28 +181,28 @@ class ControllerNode : public rclcpp::Node {
         // Timers
         float period_ms = (1.0f / pub_freq_val) * 1000.0f;
         std::chrono::duration<float, std::milli> pub_period{period_ms};
-        pub_timer = create_wall_timer(pub_period, std::bind(&ControllerNode::timer_callback, this));
+        pub_timer_ = create_wall_timer(pub_period, std::bind(&ControllerNode::timer_callback, this));
     }
 
 
   protected:
     void timer_callback() {
         // Update model state
-        x = const_vel_1d_sys.updateState(x, u);
+        x_ = system_model_.updateState(x_, u_);
 
         // Simulate noisy measurement
         double meas_noise = 0.5 * (static_cast<double>(rand()) / RAND_MAX - 0.5) * 2.0;
 
         Eigen::VectorXd z(1);
-        z(0) = x(0) + meas_noise;
+        z(0) = x_(0) + meas_noise;
 
         // Kalman filter steps
-        lkf->predict(u, Q);
-        lkf->update(z, R);
+        lkf_->predict(u_, Q_);
+        lkf_->update(z, R_);
 
         // Get estimate
-        Eigen::VectorXd x_est = lkf->getStatePost();
-        Eigen::MatrixXd P_est = lkf->getCovariancePost();
+        Eigen::VectorXd x_est = lkf_->getStatePost();
+        Eigen::MatrixXd P_est = lkf_->getCovariancePost();
 
         // ───────────────────────────────────────────────
         // Publish Visualizations
@@ -212,13 +212,13 @@ class ControllerNode : public rclcpp::Node {
 
         // Helper: Convert 1D position/velocity to 3D pose/twist (Y=Z=0, no orientation)
         geometry_msgs::msg::Pose pose;
-        pose.position.x = x(0);  // True position
+        pose.position.x_ = x_(0);  // True position
         pose.position.y = 0.0;
         pose.position.z = 0.0;
         pose.orientation.w = 1.0;  // Identity quaternion
 
         geometry_msgs::msg::Twist twist;
-        twist.linear.x = x(1);  // True velocity
+        twist.linear.x_ = x_(1);  // True velocity
         twist.linear.y = 0.0;
         twist.linear.z = 0.0;
 
@@ -233,9 +233,9 @@ class ControllerNode : public rclcpp::Node {
 
         // Estimated Odometry (with covariance)
         geometry_msgs::msg::Pose est_pose = pose;  // Reuse and override
-        est_pose.position.x = x_est(0);
+        est_pose.position.x_ = x_est(0);
         geometry_msgs::msg::Twist est_twist = twist;
-        est_twist.linear.x = x_est(1);
+        est_twist.linear.x_ = x_est(1);
 
         nav_msgs::msg::Odometry est_odom;
         est_odom.header.stamp = stamp;
@@ -245,7 +245,7 @@ class ControllerNode : public rclcpp::Node {
         est_odom.twist.twist = est_twist;
         // ── Pose covariance (for ellipsoid) ──────────────────────────────
         std::fill(est_odom.pose.covariance.begin(), est_odom.pose.covariance.end(), 0.0);
-        est_odom.pose.covariance[0]  = P_est(0,0);     // var(position.x)
+        est_odom.pose.covariance[0]  = P_est(0,0);     // var(position.x_)
         est_odom.pose.covariance[7]  = 0.01;           // var(position.y) — small or 0
         est_odom.pose.covariance[14] = 0.0;            // var(position.z)
         est_odom.pose.covariance[21] = 0.0;            // var(roll)
@@ -253,7 +253,7 @@ class ControllerNode : public rclcpp::Node {
         est_odom.pose.covariance[35] = 0.01;           // var(yaw) — give some value
         // ── Twist covariance (for velocity arrows if enabled) ─────────────
         std::fill(est_odom.twist.covariance.begin(), est_odom.twist.covariance.end(), 0.0);
-        est_odom.twist.covariance[0]  = P_est(1,1);    // var(velocity.linear.x)
+        est_odom.twist.covariance[0]  = P_est(1,1);    // var(velocity.linear.x_)
         est_odom.twist.covariance[7]  = 0.0;           // var(vy)
         est_odom.twist.covariance[14] = 0.0;           // var(vz)
         estimated_odom_pub_->publish(est_odom);
@@ -263,7 +263,7 @@ class ControllerNode : public rclcpp::Node {
         tf.header.stamp = stamp;
         tf.header.frame_id = "map";
         tf.child_frame_id = "base_link";
-        tf.transform.translation.x = x_est(0);
+        tf.transform.translation.x_ = x_est(0);
         tf.transform.translation.y = 0.0;
         tf.transform.translation.z = 0.0;
         tf.transform.rotation.w = 1.0;
@@ -294,11 +294,11 @@ class ControllerNode : public rclcpp::Node {
         sensor_marker.id = 0;
         sensor_marker.type = visualization_msgs::msg::Marker::SPHERE;
         sensor_marker.action = visualization_msgs::msg::Marker::ADD;
-        sensor_marker.pose.position.x = z(0);  // Measured position
+        sensor_marker.pose.position.x_ = z(0);  // Measured position
         sensor_marker.pose.position.y = 0.0;
         sensor_marker.pose.position.z = 0.0;
         sensor_marker.pose.orientation.w = 1.0;
-        sensor_marker.scale.x = 0.5;              // adjust size to represent uncertainty scale
+        sensor_marker.scale.x_ = 0.5;              // adjust size to represent uncertainty scale
         sensor_marker.scale.y = 0.5;
         sensor_marker.scale.z = 0.5;
         sensor_marker.color.a = 0.6;              // semi-transparent
@@ -311,26 +311,26 @@ class ControllerNode : public rclcpp::Node {
 
 
   private:
-    std::shared_ptr<LinearKalmanFilter> lkf{};
-    ConstVel1dModel const_vel_1d_sys{};
+    std::shared_ptr<LinearKalmanFilter> lkf_{};
+    ConstVel1dModel system_model_{};
 
     int pub_freq_ = 10;
     double Ts_ = 0.1;
 
-    Eigen::VectorXd x;
-    Eigen::MatrixXd P;
-    Eigen::VectorXd u;
-    Eigen::MatrixXd Q;
-    Eigen::MatrixXd R;
+    Eigen::VectorXd x_;
+    Eigen::MatrixXd P_;
+    Eigen::VectorXd u_;
+    Eigen::MatrixXd Q_;
+    Eigen::MatrixXd R_;
 
     // Params
-    rclcpp::Parameter pub_freq_param{};
-    rclcpp::Parameter Ts_param{};
-    rclcpp::Parameter x0_param{};
-    rclcpp::Parameter u0_param{};
-    rclcpp::Parameter P0_param{};
-    rclcpp::Parameter Q_param{};
-    rclcpp::Parameter R_param{};
+    rclcpp::Parameter pub_freq_param_{};
+    rclcpp::Parameter Ts_param_{};
+    rclcpp::Parameter x0_param_{};
+    rclcpp::Parameter u0_param_{};
+    rclcpp::Parameter P0_param_{};
+    rclcpp::Parameter Q_param_{};
+    rclcpp::Parameter R_param_{};
 
     // Publishers
     rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr true_odom_pub_;
@@ -347,7 +347,7 @@ class ControllerNode : public rclcpp::Node {
     nav_msgs::msg::Path estimated_path_;
 
     // Timers
-    rclcpp::TimerBase::SharedPtr pub_timer{};
+    rclcpp::TimerBase::SharedPtr pub_timer_{};
 };
 
 
