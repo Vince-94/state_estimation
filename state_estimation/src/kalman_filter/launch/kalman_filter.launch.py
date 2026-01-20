@@ -30,7 +30,9 @@ with open(params_file) as file:
 def generate_launch_description():
 
     #! Envs
+
     colorful_logs = SetEnvironmentVariable(name="RCUTILS_COLORIZED_OUTPUT", value="1")
+
 
     #! nodes
 
