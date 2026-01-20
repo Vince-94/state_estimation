@@ -5,7 +5,7 @@ services:
   state_estimation:
     build:
       context: docker
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile_ros2
       args:
         UID: ${UID:-1000}
         GID: ${GID:-1000}
@@ -15,12 +15,13 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
       - QT_X11_NO_MITSHM=1
-      - XAUTHORITY=/tmp/.docker.xauth
-      - XDG_RUNTIME_DIR=/run/user/1000
+      - XAUTHORITY=/home/ubuntu/.Xauthority   # ← important: point to home, not /tmp
+      # - XDG_RUNTIME_DIR=/run/user/1000
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
-      - "/tmp/.docker.xauth:/tmp/.docker.xauth"
+      # - "/tmp/.docker.xauth:/tmp/.docker.xauth"
+      - "${HOME}/.Xauthority:/home/ubuntu/.Xauthority:ro"   # ← Mount host's real .Xauthority
       - ${PWD}/state_estimation:/home/ubuntu/state_estimation:rw
     network_mode: host
     tty: true

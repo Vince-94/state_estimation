@@ -31,6 +31,7 @@ This project implements various state estimation :
     ```
 
 ## Docker
+- Add: `xhost +local:docker`
 - Build docker image
     ```sh
     docker compose build

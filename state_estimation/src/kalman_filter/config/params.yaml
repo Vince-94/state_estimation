@@ -1,0 +1,12 @@
+---
+linear_kalman_filter_node:
+  ros__parameters:
+    pub_freq: 10
+    Ts: 0.1
+    x0: [0.0, 0.1]
+    u0: [0.0]
+    P0: [20.0, 20.0]
+    Q: [0.01, 0.001]
+    R: [4.0]
+
+

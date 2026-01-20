@@ -1,15 +1,14 @@
-#ifndef UNSCENTED_KALMAN_FILTER_HPP
-#define UNSCENTED_KALMAN_FILTER_HPP
+#ifndef LINEAR_KALMAN_FILTER_HPP
+#define LINEAR_KALMAN_FILTER_HPP
 
-#include "system_models.hpp"
-#include "jacobians.hpp"
+#include "utils/system_models.hpp"
 
 #include <Eigen/Dense>
 
 
-class UnscentedKalmanFilter {
+class LinearKalmanFilter {
 public:
-    UnscentedKalmanFilter(NonlinearSystem&& system_model, double alpha, double kappa, double beta);
+    LinearKalmanFilter(StateSpace&& system_model);
 
     void initialize(const Eigen::VectorXd x0, const Eigen::MatrixXd P0);
 
@@ -37,20 +36,12 @@ public:
 
     void setCovariancePost(Eigen::MatrixXd P_post) { P_post_ = P_post; };
 
-protected:
-    void computeSigmaPoints(const Eigen::VectorXd& x, const Eigen::MatrixXd& P, Eigen::MatrixXd& sigma_points, Eigen::VectorXd& wm, Eigen::VectorXd& wc) const;
-
-    Eigen::VectorXd recoverMean(const Eigen::MatrixXd& points, const Eigen::VectorXd& wm) const;
-
-    Eigen::MatrixXd recoverCov(const Eigen::MatrixXd& points, const Eigen::VectorXd& mean, const Eigen::VectorXd& wc) const;
-
-    Eigen::MatrixXd recoverCrossCov(const Eigen::MatrixXd& state_points, const Eigen::VectorXd& state_mean,
-                                    const Eigen::MatrixXd& meas_points, const Eigen::VectorXd& meas_mean,
-                                    const Eigen::VectorXd& wc) const;
-
 private:
     /// @brief System model
-    NonlinearSystem system_model_;
+    StateSpace system_model_;
+
+    /// @brief Sensor model
+    Eigen::MatrixXd C_{};
 
     /// @brief System model dimension
     int nx_{};
@@ -59,18 +50,13 @@ private:
 
     bool initialized_ = false;
 
-    double alpha_ = 1e-3;  // Spread (0 < alpha <=1)
-    double kappa_ = 0.0;   // Often 3 - nx_
-    double beta_ = 2.0;    // For Gaussian
-
     // State/Covariance
     Eigen::VectorXd x_prio_{};
     Eigen::MatrixXd P_prio_{};
     Eigen::VectorXd x_post_{};
     Eigen::MatrixXd P_post_{};
 
-    Eigen::VectorXd u0_{};
 };
 
 
-#endif  // UNSCENTED_KALMAN_FILTER_HPP
+#endif  // LINEAR_KALMAN_FILTER_HPP

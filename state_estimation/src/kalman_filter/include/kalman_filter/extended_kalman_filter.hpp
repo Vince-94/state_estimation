@@ -1,14 +1,15 @@
-#ifndef LINEAR_KALMAN_FILTER_HPP
-#define LINEAR_KALMAN_FILTER_HPP
+#ifndef EXTENDED_KALMAN_FILTER_HPP
+#define EXTENDED_KALMAN_FILTER_HPP
 
-#include "system_models.hpp"
+#include "utils/system_models.hpp"
+#include "utils/jacobians.hpp"
 
 #include <Eigen/Dense>
 
 
-class LinearKalmanFilter {
+class ExtendedKalmanFilter {
 public:
-    LinearKalmanFilter(StateSpace&& system_model);
+    ExtendedKalmanFilter(NonlinearSystem&& system_model);
 
     void initialize(const Eigen::VectorXd x0, const Eigen::MatrixXd P0);
 
@@ -38,10 +39,7 @@ public:
 
 private:
     /// @brief System model
-    StateSpace system_model_;
-
-    /// @brief Sensor model
-    Eigen::MatrixXd C_{};
+    NonlinearSystem system_model_;
 
     /// @brief System model dimension
     int nx_{};
@@ -56,7 +54,8 @@ private:
     Eigen::VectorXd x_post_{};
     Eigen::MatrixXd P_post_{};
 
+    Eigen::VectorXd u0_{};
 };
 
 
-#endif  // LINEAR_KALMAN_FILTER_HPP
+#endif  // EXTENDED_KALMAN_FILTER_HPP

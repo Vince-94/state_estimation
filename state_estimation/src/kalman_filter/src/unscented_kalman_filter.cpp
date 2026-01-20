@@ -1,4 +1,4 @@
-#include "unscented_kalman_filter.hpp"
+#include "kalman_filter/unscented_kalman_filter.hpp"
 
 #include <iostream>
 
@@ -17,15 +17,14 @@ void UnscentedKalmanFilter::initialize(const Eigen::VectorXd x0, const Eigen::Ma
         return;
     }
 
-    std::cout << "EKF initializing..." << std::endl;
-
     // Check dimensions consistency
     if (x0.size() != nx_) {
-        throw std::invalid_argument("x0 dimensions are inconsistent");
+        std::string err_msg = "x0 dimension (" + std::to_string(x0.size()) + ") must match ny (" + std::to_string(nx_) + ")";
+        throw std::invalid_argument(err_msg);
     }
-
     if (P0.rows() != nx_ || P0.cols() != nx_) {
-        throw std::invalid_argument("P0 dimensions are inconsistent");
+        std::string err_msg = "P0 dimensions (" + std::to_string(P0.rows()) + ", " + std::to_string(P0.cols()) + ") must match (" + std::to_string(nx_) + ", " + std::to_string(nx_) + ")";
+        throw std::invalid_argument(err_msg);
     }
 
     // A priori state/covariance initialization
@@ -43,16 +42,19 @@ void UnscentedKalmanFilter::initialize(const Eigen::VectorXd x0, const Eigen::Ma
     u0_ = Eigen::VectorXd::Zero(nu_);
 
     initialized_ = true;
+    std::cout << "UKF initialized" << std::endl;
 }
 
 
 void UnscentedKalmanFilter::initializeAtFirstUpdate(const Eigen::VectorXd z, const Eigen::MatrixXd R) {
+    // Check dimensions
     if (z.size() != ny_) {
-        throw std::invalid_argument("z dimensions are inconsistent");
+        std::string err_msg = "z dimension (" + std::to_string(z.size()) + ") must match ny (" + std::to_string(ny_) + ")";
+        throw std::invalid_argument(err_msg);
     }
-
     if (R.rows() != ny_ || R.cols() != ny_) {
-        throw std::invalid_argument("R dimensions are inconsistent");
+        std::string err_msg = "R dimensions (" + std::to_string(R.rows()) + ", " + std::to_string(R.cols()) + ") must match (" + std::to_string(ny_) + ", " + std::to_string(ny_) + ")";
+        throw std::invalid_argument(err_msg);
     }
 
     // Approximate nonlinear init: Linearize h around guess (e.g., zero), use pseudoinverse
@@ -146,8 +148,14 @@ void UnscentedKalmanFilter::predict(const Eigen::VectorXd u, const Eigen::Matrix
     if (!initialized_) return;
 
     // Check dimensions
-    if (u.size() != nu_) throw std::invalid_argument("u dimensions inconsistent");
-    if (Q.rows() != nx_ || Q.cols() != nx_) throw std::invalid_argument("Q dimensions inconsistent");
+    if (u.size() != nu_) {
+        std::string err_msg = "u dimension (" + std::to_string(u.size()) + ") must match nu (" + std::to_string(nu_) + ")";
+        throw std::invalid_argument(err_msg);
+    }
+    if (Q.rows() != nx_ || Q.cols() != nx_) {
+        std::string err_msg = "Q dimensions (" + std::to_string(Q.rows()) + ", " + std::to_string(Q.cols()) + ") must match (" + std::to_string(nx_) + ", " + std::to_string(nx_) + ")";
+        throw std::invalid_argument(err_msg);
+    }
 
     // Generate sigma points around posterior
     Eigen::MatrixXd sigma_points;
@@ -168,8 +176,14 @@ void UnscentedKalmanFilter::predict(const Eigen::VectorXd u, const Eigen::Matrix
 
 void UnscentedKalmanFilter::update(const Eigen::VectorXd z, const Eigen::MatrixXd R) {
     // Check dimensions
-    if (z.size() != ny_) throw std::invalid_argument("z dimensions inconsistent");
-    if (R.rows() != ny_ || R.cols() != ny_) throw std::invalid_argument("R dimensions inconsistent");
+    if (z.size() != ny_) {
+        std::string err_msg = "z dimension (" + std::to_string(z.size()) + ") must match ny (" + std::to_string(ny_) + ")";
+        throw std::invalid_argument(err_msg);
+    }
+    if (R.rows() != ny_ || R.cols() != ny_) {
+        std::string err_msg = "R dimensions (" + std::to_string(R.rows()) + ", " + std::to_string(R.cols()) + ") must match (" + std::to_string(ny_) + ", " + std::to_string(ny_) + ")";
+        throw std::invalid_argument(err_msg);
+    }
 
     // Check if initialized
     if (!initialized_) initializeAtFirstUpdate(z, R);
