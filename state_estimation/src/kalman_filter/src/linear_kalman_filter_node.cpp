@@ -212,13 +212,13 @@ class ControllerNode : public rclcpp::Node {
 
         // Helper: Convert 1D position/velocity to 3D pose/twist (Y=Z=0, no orientation)
         geometry_msgs::msg::Pose pose;
-        pose.position.x_ = x_(0);  // True position
+        pose.position.x = x_(0);  // True position
         pose.position.y = 0.0;
         pose.position.z = 0.0;
         pose.orientation.w = 1.0;  // Identity quaternion
 
         geometry_msgs::msg::Twist twist;
-        twist.linear.x_ = x_(1);  // True velocity
+        twist.linear.x = x_(1);  // True velocity
         twist.linear.y = 0.0;
         twist.linear.z = 0.0;
 
@@ -233,9 +233,9 @@ class ControllerNode : public rclcpp::Node {
 
         // Estimated Odometry (with covariance)
         geometry_msgs::msg::Pose est_pose = pose;  // Reuse and override
-        est_pose.position.x_ = x_est(0);
+        est_pose.position.x = x_est(0);
         geometry_msgs::msg::Twist est_twist = twist;
-        est_twist.linear.x_ = x_est(1);
+        est_twist.linear.x = x_est(1);
 
         nav_msgs::msg::Odometry est_odom;
         est_odom.header.stamp = stamp;
@@ -263,7 +263,7 @@ class ControllerNode : public rclcpp::Node {
         tf.header.stamp = stamp;
         tf.header.frame_id = "map";
         tf.child_frame_id = "base_link";
-        tf.transform.translation.x_ = x_est(0);
+        tf.transform.translation.x = x_est(0);
         tf.transform.translation.y = 0.0;
         tf.transform.translation.z = 0.0;
         tf.transform.rotation.w = 1.0;
@@ -294,11 +294,11 @@ class ControllerNode : public rclcpp::Node {
         sensor_marker.id = 0;
         sensor_marker.type = visualization_msgs::msg::Marker::SPHERE;
         sensor_marker.action = visualization_msgs::msg::Marker::ADD;
-        sensor_marker.pose.position.x_ = z(0);  // Measured position
+        sensor_marker.pose.position.x = z(0);  // Measured position
         sensor_marker.pose.position.y = 0.0;
         sensor_marker.pose.position.z = 0.0;
         sensor_marker.pose.orientation.w = 1.0;
-        sensor_marker.scale.x_ = 0.5;              // adjust size to represent uncertainty scale
+        sensor_marker.scale.x = 0.5;              // adjust size to represent uncertainty scale
         sensor_marker.scale.y = 0.5;
         sensor_marker.scale.z = 0.5;
         sensor_marker.color.a = 0.6;              // semi-transparent

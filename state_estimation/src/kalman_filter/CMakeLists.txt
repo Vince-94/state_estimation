@@ -33,6 +33,8 @@ find_package(Eigen3 REQUIRED)
 
 find_package(utils REQUIRED)
 
+find_package(GTest REQUIRED)
+
 
 #############
 # LIBRARIES #
@@ -88,13 +90,61 @@ set_target_properties(unscented_kalman_filter PROPERTIES POSITION_INDEPENDENT_CO
 # TESTS #
 #########
 
-# # test_linear_kalman_filter
-# add_executable(test_linear_kalman_filter tests/test_linear_kalman_filter.cpp)
-# target_link_libraries(test_linear_kalman_filter PUBLIC linear_kalman_filter gtest gtest_main)
+# Enable testing with CTest
+enable_testing()
+
+# test_linear_kalman_filter
+add_executable(test_linear_kalman_filter tests/test_linear_kalman_filter.cpp)
+target_include_directories(test_linear_kalman_filter PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(test_linear_kalman_filter PRIVATE
+  linear_kalman_filter
+  GTest::gmock_main
+  GTest::gtest
+)
+
+# test_extended_kalman_filter
+add_executable(test_extended_kalman_filter tests/test_extended_kalman_filter.cpp)
+target_include_directories(test_extended_kalman_filter PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(test_extended_kalman_filter PRIVATE
+  extended_kalman_filter
+  GTest::gmock_main
+  GTest::gtest
+)
+
+# test_unscented_kalman_filter
+add_executable(test_unscented_kalman_filter tests/test_unscented_kalman_filter.cpp)
+target_include_directories(test_unscented_kalman_filter PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+  ${CMAKE_CURRENT_SOURCE_DIR}/include
+)
+target_link_libraries(test_unscented_kalman_filter PRIVATE
+  unscented_kalman_filter
+  GTest::gmock_main
+  GTest::gtest
+)
+
+# Include gtest
+include(GoogleTest)
+gtest_discover_tests(test_linear_kalman_filter)
+gtest_discover_tests(test_extended_kalman_filter)
+gtest_discover_tests(test_unscented_kalman_filter)
 
 
-# # Enable testing with CTest
-# enable_testing()
+
+
+
+
+
+
 
 
 

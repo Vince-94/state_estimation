@@ -42,6 +42,13 @@ ros2 launch kalman_filter kalman_filter.launch.py
 ```
 
 
+## Tests
+
+```sh
+./build/kalman_filter/test_linear_kalman_filter
+```
+
+
 ## Roadmap
 - ROS2 integration
   - [x] LKF ROS2 node

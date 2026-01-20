@@ -1,8 +1,11 @@
 #ifndef DATA_STRUCTURE_HPP
 #define DATA_STRUCTURE_HPP
 
-#include <Eigen/Geometry>
+#include <variant>
+#include <functional>
 #include <iostream>
+
+#include <Eigen/Geometry>
 
 
 
@@ -93,8 +96,8 @@ struct StateSpace {
 
 
 struct NonlinearSystem {
-    using DynFunc = std::function<Eigen::VectorXd(const Eigen::VectorXd&, const Eigen::VectorXd&)>;
-    // TODO make the second arg std::optional -> using MeasurementFunc = std::function<Eigen::VectorXd(const Eigen::VectorXd& x, std::optional<const Eigen::VectorXd&> u = std::nullopt)>;
+    // Define the functior
+    using DynFunc = std::function<Eigen::VectorXd(const Eigen::VectorXd& x, const Eigen::VectorXd& u)>;
 
     // Dimensions
     int nx{};
@@ -129,9 +132,9 @@ struct NonlinearSystem {
             );
         }
 
-        if (Q.rows() != nu || Q.cols() != nu) {
+        if (Q.rows() != nx || Q.cols() != nx) {
             throw std::invalid_argument(
-                "Q must be square and have size " + std::to_string(nu) + "×" + std::to_string(nu) +
+                "Q must be square and have size " + std::to_string(nx) + "×" + std::to_string(nx) +
                 " (got " + std::to_string(Q.rows()) + "×" + std::to_string(Q.cols()) + ")"
             );
         }
