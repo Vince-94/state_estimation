@@ -2,6 +2,7 @@
 #define DATA_STRUCTURE_HPP
 
 #include <Eigen/Geometry>
+#include <iostream>
 
 
 
@@ -50,12 +51,8 @@ struct StateSpace {
         if (D.size() == 0) {
             D = Eigen::MatrixXd::Zero(ny, nu);
         } else {
-            if (D.rows() != ny) {
-                std::string err_msg = "D row dimension (" + std::to_string(D.cols()) + ") must match ny (" + std::to_string(ny) + ")";
-                throw std::invalid_argument(err_msg);
-            }
-            if (D.cols() != nu) {
-                std::string err_msg = "D column dimension (" + std::to_string(D.cols()) + ") must nu (" + std::to_string(nu) + ")";
+            if (D.rows() != ny || D.cols() != nu) {
+                std::string err_msg = "D dimensions (" + std::to_string(D.rows()) + ", " + std::to_string(D.cols()) + ") must match (" + std::to_string(ny) + ", " + std::to_string(nu) + ")";
                 throw std::invalid_argument(err_msg);
             }
         }
@@ -89,7 +86,8 @@ struct StateSpace {
         }
 
         // P(k+1) = A P A^T + B Q B^T
-        return A * P0 * A.transpose() + B * Q * B.transpose();
+        return A * P0 * A.transpose() + Q;
+        // return A * P0 * A.transpose() + B * Q * B.transpose();  // TODO
     }
 };
 

@@ -47,6 +47,10 @@ obj/
 debug/
 release/
 out/
+install/
+
+# Log directories
+log/
 
 # CMake-specific files and directories
 CMakeCache.txt
@@ -102,7 +106,6 @@ vendor/
 lib/
 
 # Documentation output (e.g., Doxygen)
-doc/
 html/
 latex/
 
@@ -115,3 +118,5 @@ graph_info.json
 # Environment-specific files
 .env
 .local
+
+core

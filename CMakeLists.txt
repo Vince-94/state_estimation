@@ -64,7 +64,6 @@ find_library(SDL2_GFX_LIBRARY
 )
 
 find_package(Eigen3 REQUIRED)
-find_package(Boost REQUIRED COMPONENTS system filesystem)
 
 
 

@@ -21,4 +21,26 @@ Kalman filter (KF) estimator library, with the following implementations:
     ```
 
 
+## Build
+
+- Standard: `./build.bash`
+- ROS2: `colcon build`
+
+
+## Execution
+
+- `source install/local_setup.bash`
+- Kalman filter: `ros2 run kalman_filter kalman_filter_node`
+
+### Launch
+
+```sh
+ros2 launch kalman_filter kalman_filter.launch.py
+```
+
+
+
+
+
+
 ## Reference

@@ -73,8 +73,8 @@ USER ubuntu
 WORKDIR /home/ubuntu
 
 # Set entrypoint
-COPY entrypoint.sh /
-ENTRYPOINT ["/entrypoint.sh"]
+COPY entrypoint_ros2.sh /
+ENTRYPOINT ["/entrypoint_ros2.sh"]
 
 ENV force_color_prompt=yes
 CMD ["bash"]
