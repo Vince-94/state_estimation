@@ -84,6 +84,19 @@ set_target_properties(unscented_kalman_filter PROPERTIES POSITION_INDEPENDENT_CO
 # target_link_libraries(main PRIVATE linear_kalman_filter)
 
 
+#########
+# TESTS #
+#########
+
+# # test_linear_kalman_filter
+# add_executable(test_linear_kalman_filter tests/test_linear_kalman_filter.cpp)
+# target_link_libraries(test_linear_kalman_filter PUBLIC linear_kalman_filter gtest gtest_main)
+
+
+# # Enable testing with CTest
+# enable_testing()
+
+
 
 ##############################################################################
 #                                    ROS2                                    #
