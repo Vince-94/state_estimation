@@ -23,9 +23,21 @@ Kalman filter (KF) estimator library, with the following implementations:
 
 ## Build
 
-- Standard: `./build.bash`
-- ROS2: `colcon build`
-- Source workspace: `source install/local_setup.bash`
+### CMake
+- Build
+    ```sh
+    ./build.bash
+    ```
+
+### ROS2
+- Build
+    ```sh
+    colcon build --symlink-install
+    ```
+- Source
+    ```sh
+    source install/local_setup.bash
+    ```
 
 
 ## Execution
@@ -45,19 +57,8 @@ ros2 launch kalman_filter kalman_filter.launch.py
 ## Tests
 
 ```sh
-./build/kalman_filter/test_linear_kalman_filter
+./test.bash
 ```
-
-
-## Roadmap
-- ROS2 integration
-  - [x] LKF ROS2 node
-  - [ ] EKF ROS2 node
-  - [ ] UKF ROS2 node
-- Testing
-  - [ ] LKF unit tests
-  - [ ] EKF unit tests
-  - [ ] UKF unit tests
 
 
 ## Reference
