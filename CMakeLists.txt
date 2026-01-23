@@ -8,9 +8,9 @@ project(
 )
 
 
-# ------------------------------------------------------------------------------
-# Global options
-# ------------------------------------------------------------------------------
+##################
+# GLOBAL OPTIONS #
+##################
 # Set default C++
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
@@ -30,41 +30,34 @@ endif()
 # Set default build type
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
 
-
-# ------------------------------------------------------------------------------
 # Build type (default to Release)
-# ------------------------------------------------------------------------------
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "Build type" FORCE)
 endif()
 
-
-# ------------------------------------------------------------------------------
 # Warnings (per-target, not global)
-# ------------------------------------------------------------------------------
 set(PROJECT_WARNINGS
-    -Wall
-    -Wextra
-    -Wpedantic
+  -Wall
+  -Wextra
+  -Wpedantic
 )
 
 
-# ------------------------------------------------------------------------------
-# Dependencies (examples)
-# ------------------------------------------------------------------------------
+################
+# DEPENDENCIES #
+################
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_path(SDL2_GFX_INCLUDE_DIR
-    SDL2_gfxPrimitives.h
-    PATH_SUFFIXES SDL2
+  SDL2_gfxPrimitives.h
+  PATH_SUFFIXES SDL2
 )
 find_library(SDL2_GFX_LIBRARY
-    NAMES SDL2_gfx
+  NAMES SDL2_gfx
 )
 
 find_package(Eigen3 REQUIRED)
-
 
 
 ###########
@@ -76,11 +69,10 @@ include_directories(${PROJECT_SOURCE_DIR}/utils/include)
 add_subdirectory(kalman_filter)
 
 
+################
+# INSTALLATION #
+################
 
-
-# ------------------------------------------------------------------------------
-# Installation
-# ------------------------------------------------------------------------------
 # include(GNUInstallDirs)
 
 # install(
@@ -97,9 +89,10 @@ add_subdirectory(kalman_filter)
 # )
 
 
-# ------------------------------------------------------------------------------
-# Testing
-# ------------------------------------------------------------------------------
+###########
+# TESTING #
+###########
+
 # option(BUILD_TESTS "Build tests" ON)
 
 # if(BUILD_TESTS)

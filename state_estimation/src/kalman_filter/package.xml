@@ -7,6 +7,8 @@
   <maintainer email="ruotolovincenzo94@gmail.com">Vince-94</maintainer>
   <license>GPL-3.0-only</license>
 
+  <depend>utils</depend>
+
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>rclcpp</depend>
@@ -18,8 +20,6 @@
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-
-  <depend>utils</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

@@ -28,12 +28,9 @@ endif()
 # DEPENDENCIES #
 ################
 
-# find dependencies
 find_package(Eigen3 REQUIRED)
-
-find_package(utils REQUIRED)
-
 find_package(GTest REQUIRED)
+find_package(utils REQUIRED)
 
 
 #############
