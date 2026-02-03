@@ -1,0 +1,121 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Linker files
+*.ilk
+
+# Debugger Files
+*.pdb
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# debug information files
+*.dwo
+
+# Directories for build artifacts (common in CMake, Make, etc.)
+build/
+bin/
+obj/
+debug/
+release/
+out/
+install/
+core
+
+# Log directories
+log/
+
+# CMake-specific files and directories
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+CTestTestfile.cmake
+compile_commands.json  # Optional: useful for some tools, but can be ignored if regenerated
+
+# IDE-specific files (comment out if not using these IDEs)
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.user
+*.vcxproj.filters
+*.sdf
+*.opensdf
+ipch/
+
+# Xcode
+*.xcodeproj/
+xcuserdata/
+*.xcworkspace/
+
+# CLion or other JetBrains IDEs
+.idea/
+
+# Eclipse
+.cproject
+.project
+.settings/
+
+# Code coverage and profiling
+*.gcda
+*.gcno
+*.profdata
+*.profraw
+coverage/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*~
+.DS_Store  # macOS
+Thumbs.db  # Windows
+
+# Dependencies and external libraries (if vendored)
+deps/
+external/
+vendor/
+lib/
+
+# Documentation output (e.g., Doxygen)
+html/
+latex/
+
+# Package manager files (if using vcpkg, conan, etc.)
+.vcpkg-root/
+conanbuildinfo.txt
+conaninfo.txt
+graph_info.json
+
+# Environment-specific files
+.env
+.local
